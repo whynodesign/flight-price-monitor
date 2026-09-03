@@ -1,0 +1,275 @@
+{
+  "ok": true,
+  "data": {
+    "query": {
+      "from": {
+        "code": "DZH",
+        "name": "DZH"
+      },
+      "to": {
+        "code": "DZH",
+        "name": "DZH"
+      },
+      "depart_dates": [
+        "2026-10-06"
+      ],
+      "return_dates": [
+        "2026-10-06"
+      ],
+      "platforms": [
+        "fliggy",
+        "qunar"
+      ],
+      "threshold": 0,
+      "query_time": "2026-09-03 15:14:18"
+    },
+    "results": [
+      {
+        "platform": "fliggy",
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-01",
+        "price": 1616.0,
+        "airline": "多彩航",
+        "flight_no": "GY7214",
+        "depart_time": "2026-10-01 21:10",
+        "arrive_time": "2026-10-02 14:40",
+        "fetched_at": "2026-09-03 15:10:20"
+      },
+      {
+        "platform": "fliggy",
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-02",
+        "price": 1070.0,
+        "airline": "新海航|海南航空",
+        "flight_no": "HU7028",
+        "depart_time": "2026-10-02 23:15",
+        "arrive_time": "2026-10-03 20:20",
+        "fetched_at": "2026-09-03 15:10:34"
+      },
+      {
+        "platform": "fliggy",
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-03",
+        "price": 980.0,
+        "airline": "东海",
+        "flight_no": "DZ6261",
+        "depart_time": "2026-10-03 00:05",
+        "arrive_time": "2026-10-03 20:20",
+        "fetched_at": "2026-09-03 15:10:45"
+      },
+      {
+        "platform": "fliggy",
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-04",
+        "price": 580.0,
+        "airline": "川航",
+        "flight_no": "3U6796",
+        "depart_time": "2026-10-04 06:55",
+        "arrive_time": "2026-10-04 14:40",
+        "fetched_at": "2026-09-03 15:10:59"
+      },
+      {
+        "platform": "qunar",
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-02",
+        "price": 1148.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-09-03 15:11:55"
+      },
+      {
+        "platform": "qunar",
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-03",
+        "price": 886.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-09-03 15:12:14"
+      },
+      {
+        "platform": "qunar",
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-04",
+        "price": 898.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-09-03 15:12:21"
+      },
+      {
+        "platform": "fliggy",
+        "from": "DZH",
+        "to": "SZX",
+        "date": "2026-10-06",
+        "price": 1600.0,
+        "airline": "新海航|首都航空",
+        "flight_no": "JD5653",
+        "depart_time": "2026-10-06 14:30",
+        "arrive_time": "2026-10-07 07:40",
+        "fetched_at": "2026-09-03 15:14:00"
+      },
+      {
+        "platform": "qunar",
+        "from": "DZH",
+        "to": "SZX",
+        "date": "2026-10-06",
+        "price": 1598.0,
+        "airline": "",
+        "flight_no": "",
+        "depart_time": "",
+        "arrive_time": "",
+        "fetched_at": "2026-09-03 15:14:18"
+      }
+    ],
+    "summary": [
+      {
+        "from": "DZH",
+        "to": "SZX",
+        "date": "2026-10-06",
+        "per_platform": {
+          "fliggy": 1600.0,
+          "qunar": 1598.0
+        },
+        "min_price": 1598.0,
+        "best_platform": "qunar",
+        "best_flight": "",
+        "best_depart_time": "",
+        "best_arrive_time": ""
+      },
+      {
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-01",
+        "per_platform": {
+          "fliggy": 1616.0
+        },
+        "min_price": 1616.0,
+        "best_platform": "fliggy",
+        "best_flight": "多彩航GY7214",
+        "best_depart_time": "2026-10-01 21:10",
+        "best_arrive_time": "2026-10-02 14:40"
+      },
+      {
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-02",
+        "per_platform": {
+          "fliggy": 1070.0,
+          "qunar": 1148.0
+        },
+        "min_price": 1070.0,
+        "best_platform": "fliggy",
+        "best_flight": "新海航|海南航空HU7028",
+        "best_depart_time": "2026-10-02 23:15",
+        "best_arrive_time": "2026-10-03 20:20"
+      },
+      {
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-03",
+        "per_platform": {
+          "fliggy": 980.0,
+          "qunar": 886.0
+        },
+        "min_price": 886.0,
+        "best_platform": "qunar",
+        "best_flight": "",
+        "best_depart_time": "",
+        "best_arrive_time": ""
+      },
+      {
+        "from": "SZX",
+        "to": "DZH",
+        "date": "2026-10-04",
+        "per_platform": {
+          "fliggy": 580.0,
+          "qunar": 898.0
+        },
+        "min_price": 580.0,
+        "best_platform": "fliggy",
+        "best_flight": "川航3U6796",
+        "best_depart_time": "2026-10-04 06:55",
+        "best_arrive_time": "2026-10-04 14:40"
+      }
+    ],
+    "trend": {
+      "2026-10-01": {
+        "fliggy": [
+          {
+            "t": "2026-09-03 15:10:20",
+            "v": 1616.0
+          }
+        ]
+      },
+      "2026-10-02": {
+        "fliggy": [
+          {
+            "t": "2026-09-03 15:10:34",
+            "v": 1070.0
+          }
+        ],
+        "qunar": [
+          {
+            "t": "2026-09-03 15:11:55",
+            "v": 1148.0
+          }
+        ]
+      },
+      "2026-10-03": {
+        "fliggy": [
+          {
+            "t": "2026-09-03 15:10:45",
+            "v": 980.0
+          }
+        ],
+        "qunar": [
+          {
+            "t": "2026-09-03 15:12:14",
+            "v": 886.0
+          }
+        ]
+      },
+      "2026-10-04": {
+        "fliggy": [
+          {
+            "t": "2026-09-03 15:10:59",
+            "v": 580.0
+          }
+        ],
+        "qunar": [
+          {
+            "t": "2026-09-03 15:12:21",
+            "v": 898.0
+          }
+        ]
+      },
+      "2026-10-06": {
+        "fliggy": [
+          {
+            "t": "2026-09-03 15:14:00",
+            "v": 1600.0
+          }
+        ],
+        "qunar": [
+          {
+            "t": "2026-09-03 15:14:18",
+            "v": 1598.0
+          }
+        ]
+      }
+    },
+    "generated_at": "2026-09-03T15:14:50.417994Z"
+  }
+}
