@@ -82,7 +82,8 @@ def main():
     # 历史 trend_data
     trend: dict = {}
     for fc, tc, d, p, price, ts in hist_rows:
-        trend.setdefault(d, {}).setdefault(p, []).append({"t": ts, "v": float(price)})
+        key = f"{fc}-{tc}|{d}"
+        trend.setdefault(key, {}).setdefault(p, []).append({"t": ts, "v": float(price)})
 
     payload = {
         "ok": True,
