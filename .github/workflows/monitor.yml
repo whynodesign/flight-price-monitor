@@ -2,8 +2,8 @@ name: Flight Price Monitor
 
 on:
   schedule:
-    # 每天 01:00 / 07:00 / 13:00 / 19:00 UTC（北京时间 09/15/21/03 点）
-    - cron: '0 1,7,13,19 * * *'
+    # 每小时整点运行一次
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -43,7 +43,7 @@ jobs:
                 - "2026-10-02"
                 - "2026-10-03"
                 - "2026-10-04"
-              alert_threshold: 580
+              alert_threshold: 579
 
             - from: SZX
               from_name: 深圳
@@ -53,7 +53,7 @@ jobs:
                 - "2026-10-02"
                 - "2026-10-03"
                 - "2026-10-04"
-              alert_threshold: 580
+              alert_threshold: 579
 
           platforms:
             - fliggy
