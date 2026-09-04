@@ -5,39 +5,6 @@ on:
     # 每天 01:00 / 07:00 / 13:00 / 19:00 UTC（北京时间 09/15/21/03 点）
     - cron: '0 1,7,13,19 * * *'
   workflow_dispatch:
-    inputs:
-      from_code:
-        description: '出发地三字码 (如 SZX)'
-        required: true
-        default: 'SZX'
-      from_name:
-        description: '出发地名称 (如 深圳)'
-        required: true
-        default: '深圳'
-      to_code:
-        description: '目的地三字码 (如 DZH)'
-        required: true
-        default: 'DZH'
-      to_name:
-        description: '目的地名称 (如 达州)'
-        required: true
-        default: '达州'
-      depart_dates:
-        description: '去程日期, 逗号分隔 (如 2026-10-01,2026-10-02)'
-        required: true
-        default: '2026-10-01,2026-10-02,2026-10-03,2026-10-04'
-      return_dates:
-        description: '回程日期, 逗号分隔 (可选)'
-        required: false
-        default: ''
-      platforms:
-        description: '平台: fliggy,tuniu,qunar,tongcheng,ctrip'
-        required: false
-        default: 'fliggy,qunar,tongcheng'
-      threshold:
-        description: '低价提醒阈值（元）'
-        required: false
-        default: '600'
 
 permissions:
   contents: write
@@ -62,23 +29,71 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install chromium --with-deps
 
-      - name: Build config from workflow_dispatch or defaults
+      - name: Build config (multi-route)
+        env:
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
         run: |
-          python scripts/build_config.py \
-            --from-code "${{ github.event.inputs.from_code || 'SZX' }}" \
-            --from-name "${{ github.event.inputs.from_name || '深圳' }}" \
-            --to-code "${{ github.event.inputs.to_code || 'DZH' }}" \
-            --to-name "${{ github.event.inputs.to_name || '达州' }}" \
-            --dates "${{ github.event.inputs.depart_dates || '2026-10-01,2026-10-02,2026-10-03,2026-10-04' }}" \
-            --return-dates "${{ github.event.inputs.return_dates || '' }}" \
-            --platforms "${{ github.event.inputs.platforms || 'fliggy,qunar,tongcheng' }}" \
-            --threshold "${{ github.event.inputs.threshold || '600' }}" \
-            --serverchan-key "${{ secrets.SERVERCHAN_KEY }}" \
-            --output config.yaml
+          cat > config.yaml <<EOF
+          routes:
+            - from: SZX
+              from_name: 深圳
+              to: DZH
+              to_name: 达州
+              dates:
+                - "2026-10-02"
+                - "2026-10-03"
+                - "2026-10-04"
+              alert_threshold: 580
+
+            - from: SZX
+              from_name: 深圳
+              to: CTU
+              to_name: 成都
+              dates:
+                - "2026-10-02"
+                - "2026-10-03"
+                - "2026-10-04"
+              alert_threshold: 580
+
+          platforms:
+            - fliggy
+            - qunar
+            - tongcheng
+
+          schedule:
+            interval_minutes: 999
+            jitter_minutes: 0
+            run_on_start: true
+
+          crawler:
+            headless: true
+            timeout_seconds: 45
+            delay_min: 5
+            delay_max: 15
+            user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+            mobile_user_agent: ""
+            debug: false
+            debug_dir: debug
+            user_data_dir: user_data
+
+          output:
+            db_path: data/prices.db
+            log_path: logs/monitor.log
+
+          notifier:
+            push_drop_min: 30
+            push_rise_min: 50
+            serverchan:
+              enabled: true
+              send_key: "${SERVERCHAN_KEY}"
+              channel: ""
+          EOF
+          echo "--- routes in generated config ---"
+          grep -E 'from:|to:|alert_threshold:' config.yaml
 
       - name: Run price monitor (one round)
         run: python main.py --once
-        timeout-minutes: 15
+        timeout-minutes: 25
 
       - name: Export latest results to JSON
         run: |
