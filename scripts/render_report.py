@@ -11,6 +11,22 @@ from string import Template
 PLATFORM_NAMES  = {"fliggy":"飞猪","tuniu":"途牛","ctrip":"携程","qunar":"去哪儿","tongcheng":"同程"}
 PLATFORM_COLORS = {"fliggy":"#FF6B00","tuniu":"#00A651","ctrip":"#0086F6","qunar":"#FF4500","tongcheng":"#7C3AED"}
 
+
+CITY_NAMES = {
+    "BJS": "北京", "SHA": "上海", "CAN": "广州", "SZX": "深圳", "CTU": "成都",
+    "CKG": "重庆", "HGH": "杭州", "SIA": "西安", "KMG": "昆明", "LZO": "泸州",
+    "DZH": "达州", "XMN": "厦门", "WUH": "武汉", "NKG": "南京", "KWE": "贵阳",
+    "SYX": "三亚", "TAO": "青岛", "CSX": "长沙", "TSN": "天津", "HAK": "海口",
+    "URC": "乌鲁木齐", "LHW": "兰州", "TNA": "济南", "HRB": "哈尔滨", "SHE": "沈阳",
+    "DLC": "大连", "NNG": "南宁", "FOC": "福州", "KWL": "桂林", "LJG": "丽江",
+}
+
+def city(code):
+    return CITY_NAMES.get(code, code)
+
+def route_label(from_code, to_code):
+    return f"{city(from_code)}→{city(to_code)}"
+
 CSS = """
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f0f2f7;--card:#fff;--border:#e8eaef;--text:#1a1d29;--sub:#6b7280;
@@ -60,6 +76,16 @@ tr:last-child td{border-bottom:none}
 canvas{width:100%;border-radius:8px;background:#fafbff;display:block}
 .nodata{text-align:center;padding:40px;color:var(--sub);font-size:13px}
 .footer{text-align:center;color:#b0b7c3;font-size:12px;padding:20px 0 0}
+.hero-routes{color:#fff;font-size:14px;font-weight:500;margin-bottom:6px;opacity:.92}
+td.route{text-align:left;font-weight:600;font-size:13px;color:var(--text);white-space:nowrap}
+td.route .rt{display:inline-block;padding:3px 9px;border-radius:6px;background:#eef2ff;color:#3730a3;font-size:12px}
+.route-sep{border-top:2px solid var(--border)}
+.bestgrid{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.bestcard{flex:1 1 180px;border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;background:#fafbff}
+.bc-route{font-size:13px;color:var(--sub);font-weight:600;margin-bottom:4px}
+.bc-price{font-size:24px;font-weight:800;color:var(--red);line-height:1.2}
+.bc-sub{font-size:12px;color:var(--sub);margin-top:4px}
+
 """
 
 JS_TPL = r"""
@@ -112,10 +138,27 @@ def e(s):
 
 
 def render(q, summary, trend):
-    fn, fc = q["from"]["name"], q["from"]["code"]
-    tn, tc = q["to"]["name"],   q["to"]["code"]
     platforms = q["platforms"]
     platform_desc = "、".join(PLATFORM_NAMES.get(p, p) for p in platforms)
+
+    # 本次涉及的所有航线（按出现顺序去重）
+    routes = []
+    for s in summary:
+        rk = (s["from"], s["to"])
+        if rk not in routes:
+            routes.append(rk)
+    multi = len(routes) > 1
+
+    # 标题
+    if multi:
+        title_main = "多航线机票比价"
+        title_sub_routes = " · ".join(route_label(f, t) for f, t in routes)
+        head_title = "机票比价 · " + " / ".join(route_label(f, t) for f, t in routes)
+    else:
+        f0, t0 = routes[0] if routes else (q["from"]["code"], q["to"]["code"])
+        title_main = f"{city(f0)}（{f0}） ⇄ {city(t0)}（{t0}）"
+        title_sub_routes = ""
+        head_title = f"机票比价 · {city(f0)}⇄{city(t0)}"
 
     # 列头
     def th(p):
@@ -123,11 +166,20 @@ def render(q, summary, trend):
         n = PLATFORM_NAMES.get(p, p)
         return f"<th><span class='dot' style='background:{c}'></span>{e(n)}</th>"
     ths = "".join(th(p) for p in platforms)
+    route_th = "<th>航线</th>" if multi else ""
 
-    # 表体
+    # 每条航线内部按日期排序；航线之间按首次出现顺序
+    ordered = sorted(summary, key=lambda s: (routes.index((s["from"], s["to"])), s["date"]))
+
+    # 反向航线（A→B 与 B→A 同时存在）才算回程
+    reverse_exists = {(f, t) for f, t in routes if (t, f) in routes}
+
     rows_html = []
-    for s in summary:
-        is_r = s["from"] == tc
+    prev_route = None
+    for s in ordered:
+        rk = (s["from"], s["to"])
+        # 只有存在反向航线时才区分去程/回程，否则一律算去程
+        is_r = rk in reverse_exists and (s["to"], s["from"]) == routes[0]
         cells = ""
         for p in platforms:
             pr = s["per_platform"].get(p)
@@ -139,35 +191,68 @@ def render(q, summary, trend):
                 cells += f"<td>¥{pr:.0f}</td>"
         bc = PLATFORM_COLORS.get(s["best_platform"], "#888")
         bn = PLATFORM_NAMES.get(s["best_platform"], s["best_platform"])
+        sep = " route-sep" if (multi and prev_route is not None and rk != prev_route) else ""
+        route_td = (
+            f"<td class='route{sep}'><span class='rt'>{e(route_label(*rk))}</span></td>"
+            if multi else ""
+        )
         rows_html.append(
             f"<tr>"
-            f"<td><span class='{'tag-r' if is_r else 'tag-d'}'>{'回程' if is_r else '去程'}</span> {e(s['date'])}</td>"
+            f"{route_td}"
+            f"<td class='{sep.strip()}'><span class='{'tag-r' if is_r else 'tag-d'}'>"
+            f"{'回程' if is_r else '去程'}</span> {e(s['date'])}</td>"
             f"{cells}"
             f"<td class='best'>¥{s['min_price']:.0f}</td>"
             f"<td>{e(s['best_flight'])}<br><span class='badge' style='background:{bc}'>{e(bn)}</span></td>"
             f"<td class='time'>{e(s['best_depart_time'])}<br>→ {e(s['best_arrive_time'])}</td>"
             f"</tr>"
         )
+        prev_route = rk
 
-    # 往返合计
-    ob = [s for s in summary if s["from"] == fc]
-    ib = [s for s in summary if s["from"] == tc]
+    # 每条航线的最低价小结
+    best_html = ""
+    if summary:
+        items = []
+        for f, t in routes:
+            rs = [s for s in summary if (s["from"], s["to"]) == (f, t)]
+            b = min(rs, key=lambda s: s["min_price"])
+            items.append(
+                f"<div class='bestcard'>"
+                f"<div class='bc-route'>{e(route_label(f, t))}</div>"
+                f"<div class='bc-price'>¥{b['min_price']:.0f}</div>"
+                f"<div class='bc-sub'>{e(b['date'])} · {e(b['best_flight'])} · "
+                f"{e(PLATFORM_NAMES.get(b['best_platform'], b['best_platform']))}</div>"
+                f"</div>"
+            )
+        best_html = "<div class='bestgrid'>" + "".join(items) + "</div>"
+
+    # 往返合计：仅当确实存在反向航线时
     total_html = ""
-    if ob and ib:
-        bo = min(ob, key=lambda s: s["min_price"])
-        bi = min(ib, key=lambda s: s["min_price"])
-        tot = bo["min_price"] + bi["min_price"]
-        total_html = (
-            f"<div class='total'>"
-            f"<span class='total-lbl'>往返合计最低</span>"
-            f"<span class='total-p'>¥{tot:.0f}</span>"
-            f"<span class='total-sub'>去程 {e(bo['date'])} ¥{bo['min_price']:.0f} ＋ 回程 {e(bi['date'])} ¥{bi['min_price']:.0f}</span>"
-            f"</div>"
-        )
+    done = set()
+    for f, t in routes:
+        if (t, f) in routes and (t, f) not in done:
+            done.add((f, t))
+            ob = [s for s in summary if (s["from"], s["to"]) == (f, t)]
+            ib = [s for s in summary if (s["from"], s["to"]) == (t, f)]
+            if ob and ib:
+                bo = min(ob, key=lambda s: s["min_price"])
+                bi = min(ib, key=lambda s: s["min_price"])
+                tot = bo["min_price"] + bi["min_price"]
+                total_html += (
+                    f"<div class='total'>"
+                    f"<span class='total-lbl'>{e(route_label(f, t))} 往返合计最低</span>"
+                    f"<span class='total-p'>¥{tot:.0f}</span>"
+                    f"<span class='total-sub'>去程 {e(bo['date'])} ¥{bo['min_price']:.0f} "
+                    f"＋ 回程 {e(bi['date'])} ¥{bi['min_price']:.0f}</span>"
+                    f"</div>"
+                )
 
-    # trend 过滤到本次日期
-    all_dates = sorted({s["date"] for s in summary})
-    trend_filtered = {d: trend.get(d, {}) for d in all_dates}
+    # 走势：按「航线+日期」取桶，tab 标签带航线名
+    trend_filtered = {}
+    for s in ordered:
+        key = f"{s['from']}-{s['to']}|{s['date']}"
+        label = f"{route_label(s['from'], s['to'])} {s['date'][5:]}" if multi else s["date"]
+        trend_filtered[label] = trend.get(key, {})
     all_plat = sorted({p for d in trend_filtered.values() for p in d})
     cm = {p: PLATFORM_COLORS.get(p, "#888") for p in all_plat}
     nm = {p: PLATFORM_NAMES.get(p, p) for p in all_plat}
@@ -178,25 +263,31 @@ def render(q, summary, trend):
         NAME_MAP=json.dumps(nm, ensure_ascii=False),
     )
 
+    sub_routes_html = (
+        f"<div class='hero-routes'>{e(title_sub_routes)}</div>" if title_sub_routes else ""
+    )
+
     return f"""<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>机票比价 · {e(fn)}⇄{e(tn)}</title>
+<title>{e(head_title)}</title>
 <style>{CSS}</style>
 </head>
 <body>
 <div class="page">
   <div class="hero">
-    <h1>✈️ {e(fn)}（{e(fc)}）⇄ {e(tn)}（{e(tc)}）</h1>
+    <h1>✈️ {e(title_main)}</h1>
+    {sub_routes_html}
     <div class="sub">机票多平台价格监控 · {e(q['query_time'])} · 数据仅供参考</div>
   </div>
   <div class="card">
     <div class="card-title">📊 比价结果</div>
+    {best_html}
     <div class="table-wrap">
       <table>
-        <thead><tr><th>航线/日期</th>{ths}<th>最低价</th><th>最低价航班</th><th>起降时间</th></tr></thead>
+        <thead><tr>{route_th}<th>日期</th>{ths}<th>最低价</th><th>最低价航班</th><th>起降时间</th></tr></thead>
         <tbody>{''.join(rows_html)}</tbody>
       </table>
     </div>
