@@ -195,6 +195,7 @@ class QunarCrawler(BaseCrawler):
             self.logger.warning("[qunar] httpx 响应无价格，len=%d", len(text))
             return None
         self.logger.info("[qunar] httpx 提取价格列表: %s", sorted(set(prices)))
+        prices = self._drop_outliers(prices, self.logger)
         return float(min(prices))
 
     @staticmethod
@@ -292,6 +293,7 @@ class QunarCrawler(BaseCrawler):
             prices = self._extract_qunar_prices(snap["response_text"])
             if prices:
                 self.logger.info("[qunar] 浏览器提取价格列表: %s", sorted(set(prices)))
+                prices = self._drop_outliers(prices, self.logger)
                 return float(min(prices))
         return None
 
@@ -338,6 +340,33 @@ class QunarCrawler(BaseCrawler):
             self.logger.info("[qunar] 已保存响应: %s (len=%d)", path, len(text))
         except Exception:
             pass
+
+
+    # ==================== 离群值过滤 ====================
+    @staticmethod
+    def _drop_outliers(prices: list, logger=None) -> list:
+        """剔除明显不是机票价的离群小值。
+
+        去哪儿返回的 minPrice 字段里偶尔混进非本次航线/日期的小数字
+        （实测出现过 [164, 689, 799, ...]，164 是脏数据，真实最低是 689），
+        直接取 min() 会得到假的超低价并误触发降价提醒。
+
+        规则：价格升序排列后，若最小值 < 次小值的 50%，判定为离群并丢弃，
+        重复此过程直到最小值站得住脚。列表少于 3 个值时不做判断（样本太少，
+        宁可放过也不误杀）。
+        """
+        if not prices or len(prices) < 3:
+            return prices
+        vals = sorted(set(int(p) for p in prices))
+        dropped = []
+        while len(vals) >= 3 and vals[0] < vals[1] * 0.5:
+            dropped.append(vals.pop(0))
+        if dropped and logger:
+            logger.warning(
+                "[qunar] 丢弃离群价格 %s（次低 ¥%s，疑似非本航线数据）",
+                dropped, vals[0] if vals else "-",
+            )
+        return vals if vals else prices
 
     # ==================== 价格解析 ====================
     @staticmethod
