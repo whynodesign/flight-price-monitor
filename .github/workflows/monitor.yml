@@ -112,6 +112,22 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data/
-          git diff --staged --quiet || git commit -m "chore: update price data $(date -u '+%Y-%m-%d %H:%M UTC')"
-          git push
+          # data/prices.db 一并提交：历史价格需跨运行保留，
+          # 否则走势图只有单点、推送去抖也会失效（每轮都当成首次推送）
+          git add docs/data/ data/prices.db
+          if git diff --staged --quiet; then
+            echo "无变化，跳过提交"
+            exit 0
+          fi
+          git commit -m "chore: update price data $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # 定时任务与手动触发可能撞车，push 被拒时 rebase 后重试，
+          # 冲突时以本轮结果为准（-X ours）
+          for i in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "push 被拒，rebase 后重试（第 $i 次）"
+            git pull --rebase -X ours origin main || { git rebase --abort || true; break; }
+          done
+          echo "push 重试 3 次仍失败" >&2
+          exit 1
