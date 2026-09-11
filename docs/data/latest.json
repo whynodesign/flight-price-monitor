@@ -7,8 +7,8 @@
         "name": "SZX"
       },
       "to": {
-        "code": "CTU",
-        "name": "CTU"
+        "code": "DZH",
+        "name": "DZH"
       },
       "depart_dates": [
         "2026-10-02",
@@ -21,7 +21,7 @@
         "tongcheng"
       ],
       "threshold": 0,
-      "query_time": "2026-09-11 05:59:24"
+      "query_time": "2026-09-11 11:02:44"
     },
     "results": [
       {
@@ -29,12 +29,12 @@
         "from": "SZX",
         "to": "DZH",
         "date": "2026-10-03",
-        "price": 885.0,
+        "price": 888.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:52:32"
+        "fetched_at": "2026-09-11 10:56:16"
       },
       {
         "platform": "qunar",
@@ -46,19 +46,19 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:52:53"
+        "fetched_at": "2026-09-11 10:56:33"
       },
       {
         "platform": "qunar",
         "from": "SZX",
         "to": "CTU",
         "date": "2026-10-02",
-        "price": 687.0,
+        "price": 742.0,
         "airline": "",
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:57:37"
+        "fetched_at": "2026-09-11 11:01:04"
       },
       {
         "platform": "qunar",
@@ -70,7 +70,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:58:01"
+        "fetched_at": "2026-09-11 11:01:21"
       },
       {
         "platform": "qunar",
@@ -82,7 +82,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:58:11"
+        "fetched_at": "2026-09-11 11:01:30"
       },
       {
         "platform": "tongcheng",
@@ -94,7 +94,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:58:36"
+        "fetched_at": "2026-09-11 11:01:57"
       },
       {
         "platform": "tongcheng",
@@ -106,7 +106,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:58:57"
+        "fetched_at": "2026-09-11 11:02:20"
       },
       {
         "platform": "tongcheng",
@@ -118,7 +118,7 @@
         "flight_no": "",
         "depart_time": "",
         "arrive_time": "",
-        "fetched_at": "2026-09-11 05:59:24"
+        "fetched_at": "2026-09-11 11:02:44"
       }
     ],
     "summary": [
@@ -127,10 +127,10 @@
         "to": "CTU",
         "date": "2026-10-02",
         "per_platform": {
-          "qunar": 687.0,
+          "qunar": 742.0,
           "tongcheng": 820.0
         },
-        "min_price": 687.0,
+        "min_price": 742.0,
         "best_platform": "qunar",
         "best_flight": "",
         "best_depart_time": "",
@@ -169,9 +169,9 @@
         "to": "DZH",
         "date": "2026-10-03",
         "per_platform": {
-          "qunar": 885.0
+          "qunar": 888.0
         },
-        "min_price": 885.0,
+        "min_price": 888.0,
         "best_platform": "qunar",
         "best_flight": "",
         "best_depart_time": "",
@@ -547,6 +547,10 @@
           {
             "t": "2026-09-11 05:52:32",
             "v": 885.0
+          },
+          {
+            "t": "2026-09-11 10:56:16",
+            "v": 888.0
           }
         ]
       },
@@ -808,6 +812,10 @@
           },
           {
             "t": "2026-09-11 05:52:53",
+            "v": 817.0
+          },
+          {
+            "t": "2026-09-11 10:56:33",
             "v": 817.0
           }
         ]
@@ -1071,6 +1079,10 @@
           {
             "t": "2026-09-11 05:57:37",
             "v": 687.0
+          },
+          {
+            "t": "2026-09-11 11:01:04",
+            "v": 742.0
           }
         ],
         "tongcheng": [
@@ -1236,6 +1248,10 @@
           },
           {
             "t": "2026-09-11 05:58:36",
+            "v": 820.0
+          },
+          {
+            "t": "2026-09-11 11:01:57",
             "v": 820.0
           }
         ]
@@ -1499,6 +1515,10 @@
           {
             "t": "2026-09-11 05:58:01",
             "v": 570.0
+          },
+          {
+            "t": "2026-09-11 11:01:21",
+            "v": 570.0
           }
         ],
         "tongcheng": [
@@ -1664,6 +1684,10 @@
           },
           {
             "t": "2026-09-11 05:58:57",
+            "v": 570.0
+          },
+          {
+            "t": "2026-09-11 11:02:20",
             "v": 570.0
           }
         ]
@@ -1927,6 +1951,10 @@
           {
             "t": "2026-09-11 05:58:11",
             "v": 500.0
+          },
+          {
+            "t": "2026-09-11 11:01:30",
+            "v": 500.0
           }
         ],
         "tongcheng": [
@@ -2093,10 +2121,14 @@
           {
             "t": "2026-09-11 05:59:24",
             "v": 500.0
+          },
+          {
+            "t": "2026-09-11 11:02:44",
+            "v": 500.0
           }
         ]
       }
     },
-    "generated_at": "2026-09-11T05:59:39.138576Z"
+    "generated_at": "2026-09-11T11:02:54.575760Z"
   }
 }
